@@ -132,6 +132,7 @@ app.get("/api/viewsearchhistory/:username",async function(req,res){
     }
     try{
         user = jwt.verify(token,"minuman");
+        console.log(user.id)
     }catch(err){
         ctr=0;
         res.status(401).send("Token Invalid");
@@ -158,5 +159,45 @@ app.get("/api/viewsearchhistory/:username",async function(req,res){
 }
     
 });
+app.get("/api/top10search",async function(req,res){
+    var ctr=1;
+    const token = req.header("x-auth-token");
+    let user = {};
+    var namaminuman=req.params.namaminuman;
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+        console.log(user.id)
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }
+    if (ctr==1) {
+ 
+       
+        pool.getConnection(function(err,conn){
+            if(err) res.status(500).send(err);
+            else{
+                conn.query(`select total,search from (select count(*)as "TOTAL",search as "SEARCH" from history_search order by 1 desc) AS HISTORYS limit 0,9)`,function(error,result){
+                    if(error ) res.status(500).send(error);
+                    else{
+                        res.send(result)
+                    }
+                })
+        }})
+        
+
+}
+    
+});
+
 app.listen(3000);
+
 console.log("listening to hosts 3000");
