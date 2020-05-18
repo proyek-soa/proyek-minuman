@@ -3,12 +3,38 @@ const mysql = require("mysql");
 const app = express();
 const jwt = require("jsonwebtoken");
 const request = require("request");
+const multer=require('multer');
+const path=require('path');
 const pool = mysql.createPool({
     host:"localhost",
     database:"proyek_soa",
     user:"root",
     password:""
 })
+const storage=multer.diskStorage({
+    destination:'./public/uploads',
+    filename:function(req,file,cb){
+        cb(null,file.fieldname+'-'+Date.now()+path.extname(file.originalname));
+    }
+});
+const upload=multer({
+    storage:storage,
+    fileFilter: function(req,file,cb){
+        checkFileType(file,cb);
+    }
+}).single('myImage');
+
+function checkFileType(file,cb){
+    const filetypes= /jpeg|jpg|png|gif/;
+    const extname=filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype=filetypes.test(file.mimetype);
+    if(mimetype && extname){
+        return cb(null,true);
+    }else{
+        cb('Error: Image Only!');
+    }
+
+}
 function getminuman(title) {
     return new Promise(function(resolve, reject) {
         var options = {
@@ -196,6 +222,39 @@ app.get("/api/top10search",async function(req,res){
 
 }
     
+});
+app.post('/api/upload',function (req,res){
+    var ctr=1;
+    const token = req.header("x-auth-token");
+    let user = {};
+    var namaminuman=req.params.namaminuman;
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+        console.log(user.id)
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }
+    if (ctr==1) {
+    upload(req,res,(err)=>{
+        if(err){
+            console.log(err);
+            res.send(err);
+        }else{
+            req.file.filename=user.username+".png";
+            console.log(req.file.filename);
+            res.send('Upload Berhasil');
+        }
+    });
+}
 });
 
 app.listen(3000);
