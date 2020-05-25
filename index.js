@@ -47,6 +47,18 @@ function getminuman(title) {
         });
     });
 }
+function getminumanid(id) {
+    return new Promise(function(resolve, reject) {
+        var options = {
+            'method': 'GET',
+            'url': `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`
+          };
+        request(options, function (error, response) { 
+        if (error) reject(error);
+        resolve(JSON.parse(response.body));
+        });
+    });
+}
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
@@ -67,7 +79,7 @@ app.post('/api/register',(req,res)=>{
                 if(rows.length==1){
                     res.status(400).send("status: 400, Pendaftaran gagal,username sudah terdaftar");
                 }else{
-                    var querys= "insert into user values('','"+temp+"','"+req.body.password+"',0)"
+                    var querys= "insert into user values('','"+temp+"','"+req.body.password+"',0,0)"
         
                     pool.query(querys,(err,rows,fields)=>{
                         if(err)console.log(err);
@@ -142,9 +154,7 @@ app.get("/api/searchminuman/:namaminuman/:username",async function(req,res){
         var hasil = await getminuman(req.params.namaminuman);
         const parsing=JSON.parse(hasil);
         res.status(200).send(parsing)
-       
-
-}
+    }
     
 });
 app.get("/api/viewsearchhistory/:username",async function(req,res){
@@ -257,6 +267,212 @@ app.post('/api/upload',function (req,res){
 }
 });
 
+app.post("/api/topup",function(req,res){
+    var ctr=1;
+    const token = req.header("x-auth-token");
+    let user = {};
+    var saldo=req.body.saldo;
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+        console.log(user.id)
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }
+
+    if(saldo==0){
+        res.status(400).send("Tidak bisa topup 0");
+    }
+    pool.getConnection(function(err,conn){
+        if(err) res.status(500).send(err);
+        else{
+            conn.query(`select * from user where id_user='${user.id}'`,function(error,result){
+                if(error ) res.status(500).send(error);
+                else{
+                    if(result.length<1){
+                        return res.status(400).send("Salah id");
+                    }
+                    var saldo2 = result[0].wallet;
+                    var saldo1=(saldo-0)+(saldo2-0);
+                    let queryinsert = "update user set wallet="+saldo1+" where id_user='"+user.id+"'";
+                    conn.query(queryinsert, (err, result) => {
+                        if (err) throw err;
+                    });
+                    let token={
+                        "username":result[0].username,
+                        "saldo":saldo1
+                    }
+                    res.status(200).send(token);
+                }
+            })
+        }
+    });
+});
+
+app.post("/api/get_premium",function(req,res){
+    var ctr=1;
+    var harga=5000;
+    const token = req.header("x-auth-token");
+    let user = {};
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+        console.log(user.id)
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }
+
+    pool.getConnection(function(err,conn){
+        if(err) res.status(500).send(err);
+        else{
+            conn.query(`select * from user where id_user='${user.id}'`,function(error,result){
+                if(error ) res.status(500).send(error);
+                else{
+                    if(result.length<1){
+                        return res.status(400).send("Salah id");
+                    }
+                    else if(result[0].status==1){
+                        return res.status(400).send("Anda sudah menjadi member premium");
+                    }
+                    else if(result[0].wallet<harga){
+                        return res.status(400).send("Anda kekurangan uang untuk menjadi premium");
+                    }
+                    var saldo2 = result[0].wallet;
+                    var saldo1 = saldo2-harga;
+                    let queryinsert = "update user set wallet="+saldo1+", status="+1+" where id_user='"+user.id+"'";
+                    conn.query(queryinsert, (err, result) => {
+                        if (err) throw err;
+                    });
+                    let token={
+                        "username":result[0].username,
+                        "saldo":saldo1
+                    }
+                    res.status(200).send(token);
+                }
+            })
+        }
+    });
+});
+
+app.post("/api/add_drink", async function(req,res){
+    var ctr=1;
+    const token = req.header("x-auth-token");
+    let user = {};
+    var drink_id=req.body.drink_id;
+    var price=req.body.price;
+    let hasil = await getminumanid(drink_id);
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+        console.log(user.id)
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }
+    if(user.membership!=2){
+        return res.status(400).send("Tidak bisa add, anda bukan admin");
+    }
+    if(!hasil.drinks){
+        return res.status(400).send("Salah id");
+    }
+    var hasil1 = hasil.drinks[0];
+    pool.getConnection(function(err,conn){
+        if(err) res.status(500).send(err);
+        else{
+            let queryinsert = "INSERT INTO `minuman`(`id_drink`, `drink_name`, `drink_category`, `drink_alcoholic`, `drink_glass`, `drink_price`, `ori_id`) VALUES (null, '"+hasil1.strDrink+"', '"+hasil1.strCategory+"', '"+hasil1.strAlcoholic+"', '"+hasil1.strGlass+"', "+price+", "+hasil1.idDrink+")";
+            conn.query(queryinsert, (err, result) => {
+                if (err) throw err;
+            });
+            res.status(200).send(hasil1);
+        }
+    });
+});
+
+app.post("/api/buy_drink", async function(req,res){
+    var ctr=1;
+    const token = req.header("x-auth-token");
+    let user = {};
+    var id=req.body.id;
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+        console.log(user.id)
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }
+    // if(user.membership!=1){
+    //     return res.status(400).send("Mungkin premium");
+    // }
+
+    pool.getConnection(function(err,conn){
+        if(err) res.status(500).send(err);
+        else{
+            conn.query(`select * from user where id_user='${user.id}'`,function(error,result){
+                if(error ) res.status(500).send(error);
+                else{
+                    if(result.length<1){
+                        return res.status(400).send("Salah id user");
+                    }
+                    var saldo2 = result[0].wallet;
+                    conn.query(`select * from minuman where id_drink='${id}'`,function(error,result){
+                        if(error ) res.status(500).send(error);
+                        else{
+                            if(result.length<1){
+                                return res.status(400).send("Salah id minuman");
+                            }
+                            if(saldo2<result[0].drink_price){
+                                return res.status(400).send("Anda tidak mempunyai cukup uang");
+                            }
+                            var saldo1 = saldo2-result[0].drink_price;
+                            let queryinsert = "update user set wallet="+saldo1+" where id_user='"+user.id+"'";
+                            conn.query(queryinsert, (err, result) => {
+                                if (err) throw err;
+                            });
+                            queryinsert = "INSERT INTO `history_buy`(`id`, `id_user`, `id_drink`, `status`) VALUES (null, "+user.id+", "+id+", 0)";
+                            conn.query(queryinsert, (err, result) => {
+                                if (err) throw err;
+                            });
+                            result.push({"userId":user.id,"wallet":saldo1})
+                            res.status(200).send(result);
+                        }
+                    })
+                }
+            })
+        }
+    });
+});
+
 app.listen(3000);
-//testsssd
+
 console.log("listening to hosts 3000");
