@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/proyek-soa/proyek-minuman#readme",
   "engines": {
-    "node": "12.16.1",
+    "node": "14.4.0",
     "npm": "6.14.5"
   }
 }
