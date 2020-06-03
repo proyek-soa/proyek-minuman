@@ -63,6 +63,8 @@ function getminumanid(id) {
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
+app.get('/', (req, res) => res.send('<h2> Hello World! </h2>'));
+
 app.post('/api/register',(req,res)=>{
     var temp=req.body.username;
 
