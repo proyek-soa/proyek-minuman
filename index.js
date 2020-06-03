@@ -474,6 +474,6 @@ app.post("/api/buy_drink", async function(req,res){
     });
 });
 
-app.listen(3000);
-
-console.log("listening to host 3000");
+app.listen(process.env.PORT || 3000, function(){
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+  });
