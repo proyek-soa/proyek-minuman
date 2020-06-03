@@ -26,5 +26,9 @@
   "bugs": {
     "url": "https://github.com/proyek-soa/proyek-minuman/issues"
   },
-  "homepage": "https://github.com/proyek-soa/proyek-minuman#readme"
+  "homepage": "https://github.com/proyek-soa/proyek-minuman#readme",
+  "engines": {
+    "node": "12.16.1",
+    "npm": "6.13.4"
+  }
 }
