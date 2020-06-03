@@ -92,11 +92,11 @@ app.post('/api/register',(req,res)=>{
                         
                     });
                 }
-            }})
-
-        
+            }
+        })
     }    
 });
+
 app.post("/api/login",function(req,res){
     const username = req.body.username;
     const password = req.body.password;
@@ -106,7 +106,6 @@ app.post("/api/login",function(req,res){
             conn.query(`select * from user where username='${username}' and password ='${password}'`,function(error,result){
                 if(error ) res.status(500).send(error);
                 else{
-                    
                     if(result.length <=0){
                         return res.status(400).send("Invalid username or password");
                     }
@@ -122,6 +121,7 @@ app.post("/api/login",function(req,res){
         }
     });
 });
+
 app.get("/api/searchminuman/:namaminuman/:username",async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
@@ -142,24 +142,19 @@ app.get("/api/searchminuman/:namaminuman/:username",async function(req,res){
         return res.status(400).send("Token expired");
     }
     if (ctr==1) {
- 
-       
         var query= "insert into history_search values('"+req.params.username+"','"+req.params.namaminuman+"')"
         
         pool.query(query,(err,rows,fields)=>{
             if(err)console.log(err);
             else{
-               
             }
-            
         });
-        
         var hasil = await getminuman(req.params.namaminuman);
         const parsing=JSON.parse(hasil);
         res.status(200).send(parsing)
     }
-    
 });
+
 app.get("/api/viewsearchhistory/:username",async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
@@ -181,8 +176,6 @@ app.get("/api/viewsearchhistory/:username",async function(req,res){
         return res.status(400).send("Token expired");
     }
     if (ctr==1) {
- 
-       
         pool.getConnection(function(err,conn){
             if(err) res.status(500).send(err);
             else{
@@ -192,12 +185,11 @@ app.get("/api/viewsearchhistory/:username",async function(req,res){
                         res.send(result)
                     }
                 })
-        }})
-        
-
-}
-    
+            }
+        })
+    }
 });
+
 app.get("/api/top10search",async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
@@ -219,8 +211,6 @@ app.get("/api/top10search",async function(req,res){
         return res.status(400).send("Token expired");
     }
     if (ctr==1) {
- 
-       
         pool.getConnection(function(err,conn){
             if(err) res.status(500).send(err);
             else{
@@ -230,12 +220,11 @@ app.get("/api/top10search",async function(req,res){
                         res.send(result)
                     }
                 })
-        }})
-        
-
-}
-    
+            }
+        })
+    }
 });
+
 app.post('/api/upload',function (req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
@@ -257,17 +246,17 @@ app.post('/api/upload',function (req,res){
         return res.status(400).send("Token expired");
     }
     if (ctr==1) {
-    upload(req,res,(err)=>{
-        if(err){
-            console.log(err);
-            res.send(err);
-        }else{
-            req.file.filename=user.username+".png";
-            console.log(req.file.filename);
-            res.send('Upload Berhasil');
-        }
-    });
-}
+        upload(req,res,(err)=>{
+            if(err){
+                console.log(err);
+                res.send(err);
+            }else{
+                req.file.filename=user.username+".png";
+                console.log(req.file.filename);
+                res.send('Upload Berhasil');
+            }
+        });
+    }
 });
 
 app.post("/api/topup",function(req,res){
@@ -478,4 +467,4 @@ app.post("/api/buy_drink", async function(req,res){
 
 app.listen(process.env.PORT || 3000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-  });
+});
