@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const request = require("request");
 const multer=require('multer');
 const path=require('path');
+
 const pool = mysql.createPool({
     host:"localhost",
     database:"proyek_soa",
@@ -475,4 +476,4 @@ app.post("/api/buy_drink", async function(req,res){
 
 app.listen(3000);
 
-console.log("listening to hosts 3000");
+console.log("listening to host 3000");

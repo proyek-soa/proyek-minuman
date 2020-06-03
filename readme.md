@@ -1,3 +1,2 @@
-ini adalah proyek minuman SOA 2020
-dokumentasi ada pada :
-https://documenter.getpostman.com/view/11111186/SztEaShD?version=latest
+PROYEK API MINUMAN SOA 2020
+Dokumentasi: https://documenter.getpostman.com/view/11111186/SztEaShD?version=latest
