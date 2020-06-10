@@ -7,7 +7,7 @@ const multer=require('multer');
 const path=require('path');
 
 const pool = mysql.createPool({
-    host:"localhost",
+    host:"us-cdbr-east-05.cleardb.net",
     database:"proyek_soa",
     user:"bbb583fa10a49d",
     password:"57d149b46f3135e",
