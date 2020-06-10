@@ -741,13 +741,13 @@ app.get("/api/debugging/:namaminuman",async function(req,res){
         return res.status(400).send("Token expired");
     }*/
     if (ctr==1) {
-        var query= "insert into history_search values('"+req.params.username+"','"+req.params.namaminuman+"')"
+      //  var query= "insert into history_search values('"+req.params.username+"','"+req.params.namaminuman+"')"
         
-        pool.query(query,(err,rows,fields)=>{
-            if(err)res.send(err);
-            else{
-            }
-        });
+      //  pool.query(query,(err,rows,fields)=>{
+      //      if(err)res.send(err);
+       //     else{
+        //    }
+        //});
         var hasil = await getminuman(req.params.namaminuman);
         const parsing=JSON.parse(hasil);
         res.status(200).send(parsing)
