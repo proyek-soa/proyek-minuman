@@ -84,7 +84,7 @@ app.post('/api/register',(req,res)=>{
     else{
         var query="select * from user where username='"+req.body.username+"'";
         pool.query(query,(err,rows,fields)=>{
-            if(err)console.log(err);
+            if(err)res.send(err);
             else{
                 if(rows.length==1){
                     res.status(400).send("status: 400, Pendaftaran gagal,username sudah terdaftar");
