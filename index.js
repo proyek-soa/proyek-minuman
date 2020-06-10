@@ -719,3 +719,37 @@ app.post("/api/editprofile", async function(req,res){
         }
     });
 });
+
+
+app.get("/api/debugging/:namaminuman",async function(req,res){
+    var ctr=1;
+   /* const token = req.header("x-auth-token");
+    let user = {};
+    var namaminuman=req.params.namaminuman;
+    if(!token){
+        ctr=0;
+        res.status(401).send("Token not found");
+    }
+    try{
+        user = jwt.verify(token,"minuman");
+    }catch(err){
+        ctr=0;
+        res.status(401).send("Token Invalid");
+    }
+    if((new Date().getTime()/1000)-user.iat>3*86400){
+        ctr=0;
+        return res.status(400).send("Token expired");
+    }*/
+    if (ctr==1) {
+        var query= "insert into history_search values('"+req.params.username+"','"+req.params.namaminuman+"')"
+        
+        pool.query(query,(err,rows,fields)=>{
+            if(err)res.send(err);
+            else{
+            }
+        });
+        var hasil = await getminuman(req.params.namaminuman);
+        const parsing=JSON.parse(hasil);
+        res.status(200).send(parsing)
+    }
+});
