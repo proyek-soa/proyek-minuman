@@ -8,7 +8,7 @@ const path=require('path');
 
 const pool = mysql.createPool({
     host:"us-cdbr-east-05.cleardb.net",
-    database:"proyek_soa",
+    database:"heroku_b899db830aa2670",
     user:"bbb583fa10a49d",
     password:"57d149b46f3135e",
     port:3306
