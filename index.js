@@ -12,7 +12,9 @@ const pool = mysql.createPool({
     user:"bbb583fa10a49d",
     password:"57d149b46f3135e",
     port:3306
-})
+}) 
+
+
 const storage=multer.diskStorage({
     destination:'./public/uploads',
     filename:function(req,file,cb){
