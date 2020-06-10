@@ -9,8 +9,9 @@ const path=require('path');
 const pool = mysql.createPool({
     host:"localhost",
     database:"proyek_soa",
-    user:"root",
-    password:""
+    user:"bbb583fa10a49d",
+    password:"57d149b46f3135e",
+    port:3306
 })
 const storage=multer.diskStorage({
     destination:'./public/uploads',
