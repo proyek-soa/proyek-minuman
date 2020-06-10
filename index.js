@@ -8,13 +8,10 @@ const path=require('path');
 
 const pool = mysql.createPool({
     host:"us-cdbr-east-05.cleardb.net",
-    database:"proyek_soa",
+    database:"heroku_b899db830aa2670",
     user:"bbb583fa10a49d",
-    password:"57d149b46f3135e",
-    port:3306
-}) 
-
-
+    password:"57d149b46f3135e"
+})
 const storage=multer.diskStorage({
     destination:'./public/uploads',
     filename:function(req,file,cb){
@@ -84,7 +81,7 @@ app.post('/api/register',(req,res)=>{
     else{
         var query="select * from user where username='"+req.body.username+"'";
         pool.query(query,(err,rows,fields)=>{
-            if(err)res.send(err);
+            if(err)console.log(err);
             else{
                 if(rows.length==1){
                     res.status(400).send("status: 400, Pendaftaran gagal,username sudah terdaftar");
@@ -718,38 +715,4 @@ app.post("/api/editprofile", async function(req,res){
             })
         }
     });
-});
-
-
-app.get("/api/debugging/:namaminuman",async function(req,res){
-    var ctr=1;
-   /* const token = req.header("x-auth-token");
-    let user = {};
-    var namaminuman=req.params.namaminuman;
-    if(!token){
-        ctr=0;
-        res.status(401).send("Token not found");
-    }
-    try{
-        user = jwt.verify(token,"minuman");
-    }catch(err){
-        ctr=0;
-        res.status(401).send("Token Invalid");
-    }
-    if((new Date().getTime()/1000)-user.iat>3*86400){
-        ctr=0;
-        return res.status(400).send("Token expired");
-    }*/
-    if (ctr==1) {
-      //  var query= "insert into history_search values('"+req.params.username+"','"+req.params.namaminuman+"')"
-        
-      //  pool.query(query,(err,rows,fields)=>{
-      //      if(err)res.send(err);
-       //     else{
-        //    }
-        //});
-        var hasil = await getminuman(req.params.namaminuman);
-        const parsing=JSON.parse(hasil);
-        res.status(200).send(parsing)
-    }
 });
