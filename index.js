@@ -597,64 +597,63 @@ app.get("/api/showall",async function(req,res){
     }
 });
 
-app.post("/api/editprofile", async function(req,res){
-try{    
+app.post("/api/editprofile", async function(req,res){   
     if(!req.body.username||!req.body.password){
         res.status(400).send("Bad Request : 400");
     }
     else if(!req.body.username||!req.body.password){
         res.status(400).send("Status :400, Pastikan Parameter terisi");
     }
-    var ctr=1;
-    const token = req.header("x-auth-token");
-    let user = {};
-    if(!token){
-        ctr=0;
-        res.status(401).send("Token not found");
-    }
-    try{
-        user = jwt.verify(token,"minuman");
-        console.log(user.id)
-    }catch(err){
-        ctr=0;
-        res.status(401).send("Token Invalid");
-    }
-    if((new Date().getTime()/1000)-user.iat>3*86400){
-        ctr=0;
-        return res.status(400).send("Token expired");
-    }
-
-
-    pool.getConnection(function(err,conn){
-        if(err) res.status(500).send(err);
-        else{
-            conn.query(`select * from user where id_user='${user.id}'`,function(error,result){
-                if(error) res.status(500).send(error);
-                else{
-                    if(result.length<1){
-                        return res.status(400).send("Salah id user");
-                    }
-                    else if(req.body.password != req.body.confirmpass){
-                        return res.status(400).send("Password salah");
-                    }
-                    let queryinsert = "update user set username="+req.body.username+", password="+req.body.password+" where id_user='"+user.id+"'";
-                    conn.query(queryinsert, (err, result) => {
-                        if (err) throw err;
-                    });
-                    upload(req,res,(err)=>{
-                        if(err){
-                            console.log(err);
-                            res.send(err);
-                        }else{
-                            req.file.filename=user.username+".png";
-                            console.log(req.file.filename);
-                            res.status(200).send("Update done");
-                        }
-                    });
-                }
-            })
+    else{
+        var ctr=1;
+        const token = req.header("x-auth-token");
+        let user = {};
+        if(!token){
+            ctr=0;
+            res.status(401).send("Token not found");
         }
-    });}catch(err){
-        res.send(err);
+        try{
+            user = jwt.verify(token,"minuman");
+            console.log(user.id)
+        }catch(err){
+            ctr=0;
+            res.status(401).send("Token Invalid");
+        }
+        if((new Date().getTime()/1000)-user.iat>3*86400){
+            ctr=0;
+            return res.status(400).send("Token expired");
+        }
+
+
+        pool.getConnection(function(err,conn){
+            if(err) res.status(500).send(err);
+            else{
+                conn.query(`select * from user where id_user='${user.id}'`,function(error,result){
+                    if(error) res.status(500).send(error);
+                    else{
+                        if(result.length<1){
+                            return res.status(400).send("Salah id user");
+                        }
+                        else if(req.body.password != req.body.confirmpass){
+                            return res.status(400).send("Password salah");
+                        }
+                        let queryinsert = "update user set username="+req.body.username+", password="+req.body.password+" where id_user='"+user.id+"'";
+                        conn.query(queryinsert, (err, result) => {
+                            if (err) throw err;
+                        });
+                        upload(req,res,(err)=>{
+                            if(err){
+                                console.log(err);
+                                res.send(err);
+                            }else{
+                                req.file.filename=user.username+".png";
+                                console.log(req.file.filename);
+                                res.status(200).send("Update done");
+                            }
+                        });
+                    }
+                })
+            }
+        });
     }
 });
