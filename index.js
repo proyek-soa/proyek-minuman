@@ -32,7 +32,7 @@ function checkFileType(file,cb){
     if(mimetype && extname){
         return cb(null,true);
     }else{
-        cb('Error: Image Only!');
+        return cb('Error: Image Only!');
     }
 
 }
@@ -239,11 +239,12 @@ app.get("/api/top10search",async function(req,res){
     }
 });
 
+
 app.post('/api/upload',function (req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
-    if(!token){
+    /*if(!token){
         ctr=0;
         res.status(401).send("Token not found");
     }
@@ -257,16 +258,21 @@ app.post('/api/upload',function (req,res){
     if((new Date().getTime()/1000)-user.iat>3*86400){
         ctr=0;
         return res.status(400).send("Token expired");
-    }
+    }*/
     if (ctr==1) {
         upload(req,res,(err)=>{
             if(err){
                 console.log(err);
                 res.send(err);
             }else{
-                req.file.filename=user.username+".png";
-                console.log(req.file.filename);
-                res.send('Upload Berhasil');
+                try{
+                    req.file.filename=user.username+".png";
+                    console.log(req.file.filename);
+                    res.send('Upload Berhasil');
+                }catch(err){
+                    res.send("Status 400: Bad Request")
+                }
+                
             }
         });
     }
@@ -431,7 +437,7 @@ app.post("/api/buy_drink", async function(req,res){
     const token = req.header("x-auth-token");
     let user = {};
     if(!req.body.id_minuman){
-        res.status(400).send("Error 400 : Bad Request")
+        res.status(400).send("Status 400 : Bad Request")
     }
     else{
 
@@ -634,9 +640,12 @@ app.put("/api/editprofile", async function(req,res){
                         else if(req.body.password != req.body.confirmpass){
                             return res.status(400).send("Password salah");
                         }
-                        let queryinsert = "update user set username="+req.body.username+", password="+req.body.password+" where id_user='"+user.id+"'";
+                        let queryinsert = "update user set username='"+req.body.username+"', password='"+req.body.password+"' where id_user="+user.id+"";
                         conn.query(queryinsert, (err, result) => {
                             if (err) throw err;
+                            else{
+                                res.status(200).send("Status 200 : Berhasil")
+                            }
                         });
                     }
                 })
