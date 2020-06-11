@@ -638,16 +638,6 @@ app.put("/api/editprofile", async function(req,res){
                         conn.query(queryinsert, (err, result) => {
                             if (err) throw err;
                         });
-                        upload(req,res,(err)=>{
-                            if(err){
-                                console.log(err);
-                                res.send(err);
-                            }else{
-                                req.file.filename=user.username+".png";
-                                console.log(req.file.filename);
-                                res.status(200).send("Update done");
-                            }
-                        });
                     }
                 })
             }
