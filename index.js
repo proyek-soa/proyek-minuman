@@ -430,8 +430,10 @@ app.post("/api/buy_drink", async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
-
-
+    if(!req.body.id_minuman){
+        res.status(400).send("Error 400 : Bad Request")
+    }
+    else{
 
         if(!token){
             ctr=0;
@@ -488,7 +490,7 @@ app.post("/api/buy_drink", async function(req,res){
                 })
             }
         });
-    
+    }
 });
 
 //belum jadi
