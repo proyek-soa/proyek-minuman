@@ -597,7 +597,7 @@ app.get("/api/showall",async function(req,res){
     }
 });
 
-app.post("/api/editprofile", async function(req,res){   
+app.put("/api/editprofile", async function(req,res){   
     if(!req.body.username||!req.body.password||!req.body.confirmpass){
         res.status(400).send("Bad Request : 400");
     }
