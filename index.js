@@ -23,7 +23,7 @@ const upload=multer({
     fileFilter: function(req,file,cb){
         checkFileType(file,cb);
     }
-}).single('myImage');
+}).single('image');
 
 function checkFileType(file,cb){
     const filetypes= /jpeg|jpg|png|gif/;
@@ -561,10 +561,10 @@ app.get("/api/showall",async function(req,res){
         pool.getConnection(function(err,conn){
             if(err) res.status(500).send(err);
             else{
-                conn.query(`select total,search from (select count(*)as "TOTAL",search as "SEARCH" from history_search order by 1 desc) AS HISTORYS limit 0,9)`,function(error,result){
+                conn.query(`select * from minuman order by 7 desc`,function(error,result){
                     if(error) res.status(500).send(error);
                     else{
-                        res.send(result)
+                        res.send(result);
                     }
                 })
             }
@@ -572,11 +572,10 @@ app.get("/api/showall",async function(req,res){
     }
 });
 
-app.post("/api/editprofile", async function(req,res){
+app.post("/api/editprofile", upload.single('image'), async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
-    var id=req.body.id;
     if(!token){
         ctr=0;
         res.status(401).send("Token not found");
@@ -592,42 +591,24 @@ app.post("/api/editprofile", async function(req,res){
         ctr=0;
         return res.status(400).send("Token expired");
     }
-    // if(user.membership!=1){
-    //     return res.status(400).send("Mungkin premium");
-    // }
 
     pool.getConnection(function(err,conn){
         if(err) res.status(500).send(err);
         else{
             conn.query(`select * from user where id_user='${user.id}'`,function(error,result){
-                if(error ) res.status(500).send(error);
+                if(error) res.status(500).send(error);
                 else{
                     if(result.length<1){
                         return res.status(400).send("Salah id user");
                     }
-                    var saldo2 = result[0].wallet;
-                    conn.query(`select * from minuman where id_drink='${id}'`,function(error,result){
-                        if(error) res.status(500).send(error);
-                        else{
-                            if(result.length<1){
-                                return res.status(400).send("Salah id minuman");
-                            }
-                            if(saldo2<result[0].drink_price){
-                                return res.status(400).send("Anda tidak mempunyai cukup uang");
-                            }
-                            var saldo1 = saldo2-result[0].drink_price;
-                            let queryinsert = "update user set wallet="+saldo1+" where id_user='"+user.id+"'";
-                            conn.query(queryinsert, (err, result) => {
-                                if (err) throw err;
-                            });
-                            queryinsert = "INSERT INTO `history_buy`(`id`, `id_user`, `id_drink`, `status`) VALUES (null, "+user.id+", "+id+", 0)";
-                            conn.query(queryinsert, (err, result) => {
-                                if (err) throw err;
-                            });
-                            result.push({"userId":user.id,"wallet":saldo1})
-                            res.status(200).send(result);
-                        }
-                    })
+                    else if(req.body.password != req.body.confirmpass){
+                        return res.status(400).send("Password salah");
+                    }
+                    let queryinsert = "update user set username="+req.body.username+", password="+req.body.password+", image="+req.file.filename+" where id_user='"+user.id+"'";
+                    conn.query(queryinsert, (err, result) => {
+                        if (err) throw err;
+                    });
+                    res.status(200).send("Update done");
                 }
             })
         }

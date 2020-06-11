@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ab10a5e1-dc98-41bd-ad62-5bf30ccfd8b9",
+		"_postman_id": "c9d4c5d6-2af5-4aee-921f-e52818a1f408",
 		"name": "proyek_soa",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -301,6 +301,102 @@
 							"key": "username",
 							"value": ""
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show Random Drink from Submitted Recipes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/showrandom",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"showrandom"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show Latest/Newest Submitted Drinks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/showlatest10",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"showlatest10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show All Submitted Recipes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/showall",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"showall"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Profile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "pass",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "confirmpass",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/editprofile",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"editprofile"
 					]
 				}
 			},
