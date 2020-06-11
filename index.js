@@ -244,7 +244,7 @@ app.post('/api/upload',function (req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
-    /*if(!token){
+    if(!token){
         ctr=0;
         res.status(401).send("Token not found");
     }
@@ -258,7 +258,7 @@ app.post('/api/upload',function (req,res){
     if((new Date().getTime()/1000)-user.iat>3*86400){
         ctr=0;
         return res.status(400).send("Token expired");
-    }*/
+    }
     if (ctr==1) {
         upload(req,res,(err)=>{
             if(err){
