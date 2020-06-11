@@ -574,6 +574,12 @@ app.get("/api/showall",async function(req,res){
 
 app.post("/api/editprofile", async function(req,res){
 try{    
+    if(!req.body.username||!req.body.password){
+        res.status(400).send("Bad Request : 400");
+    }
+    else if(!req.body.username||!req.body.password){
+        res.status(400).send("Status :400, Pastikan Parameter terisi");
+    }
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
@@ -592,6 +598,7 @@ try{
         ctr=0;
         return res.status(400).send("Token expired");
     }
+
 
     pool.getConnection(function(err,conn){
         if(err) res.status(500).send(err);
