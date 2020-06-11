@@ -217,7 +217,7 @@ app.get("/api/top10search",async function(req,res){
         pool.getConnection(function(err,conn){
             if(err) res.status(500).send(err);
             else{
-                conn.query(`select total,search from (select count(*)as "TOTAL",search as "SEARCH" from history_search order by 1 desc) AS HISTORYS limit 0,9)`,function(error,result){
+                conn.query(`select total,search from (select count(*) as "TOTAL",search as "SEARCH" from history_search order by 1 desc) AS HISTORYS limit 0,9)`,function(error,result){
                     if(error) res.status(500).send(error);
                     else{
                         res.send(result)
@@ -573,6 +573,7 @@ app.get("/api/showall",async function(req,res){
 });
 
 app.post("/api/editprofile", async function(req,res){
+try{    
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
@@ -621,5 +622,7 @@ app.post("/api/editprofile", async function(req,res){
                 }
             })
         }
-    });
+    });}catch(err){
+        res.send(err);
+    }
 });
