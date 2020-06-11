@@ -598,11 +598,8 @@ app.get("/api/showall",async function(req,res){
 });
 
 app.post("/api/editprofile", async function(req,res){   
-    if(!req.body.username||!req.body.password){
+    if(!req.body.username||!req.body.password||!req.body.password){
         res.status(400).send("Bad Request : 400");
-    }
-    else if(!req.body.username||!req.body.password){
-        res.status(400).send("Status :400, Pastikan Parameter terisi");
     }
     else{
         var ctr=1;
