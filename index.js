@@ -572,7 +572,7 @@ app.get("/api/showall",async function(req,res){
     }
 });
 
-app.post("/api/editprofile", upload.single('image'), async function(req,res){
+app.post("/api/editprofile", async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
@@ -608,7 +608,16 @@ app.post("/api/editprofile", upload.single('image'), async function(req,res){
                     conn.query(queryinsert, (err, result) => {
                         if (err) throw err;
                     });
-                    res.status(200).send("Update done");
+                    upload(req,res,(err)=>{
+                        if(err){
+                            console.log(err);
+                            res.send(err);
+                        }else{
+                            req.file.filename=user.username+".png";
+                            console.log(req.file.filename);
+                            res.status(200).send("Update done");
+                        }
+                    });
                 }
             })
         }
