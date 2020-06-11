@@ -430,11 +430,9 @@ app.post("/api/buy_drink", async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
-    if(!req.body.id){
-        res.status(400).send("Bad Request : 400");
-    }
-    else{
-        var id=req.body.id;
+
+
+
         if(!token){
             ctr=0;
             res.status(401).send("Token not found");
@@ -453,7 +451,7 @@ app.post("/api/buy_drink", async function(req,res){
         // if(user.membership!=1){
         //     return res.status(400).send("Mungkin premium");
         // }
-
+        var id=user.id;
         pool.getConnection(function(err,conn){
             if(err) res.status(500).send(err);
             else{
@@ -490,7 +488,7 @@ app.post("/api/buy_drink", async function(req,res){
                 })
             }
         });
-    }
+    
 });
 
 //belum jadi
