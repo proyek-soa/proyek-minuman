@@ -390,11 +390,14 @@ app.post("/api/add_drink", async function(req,res){
     var ctr=1;
     const token = req.header("x-auth-token");
     let user = {};
-    if(!req.body.drink_id||req.body.price){
+    console.log(req.body.drink_id)
+    console.log(req.body.price)
+    if(!req.body.drink_id||!req.body.price){
+        console.log("test")
         res.status(400).send("Bad Request : 400");
     }
     else{
-        var drink_id=req.body.drink_id;
+        var drink_id=C
         var price=req.body.price;
         let hasil = await getminumanid(drink_id);
         if(!token){
@@ -437,6 +440,7 @@ app.post("/api/buy_drink", async function(req,res){
     const token = req.header("x-auth-token");
     let user = {};
     if(!req.body.id_minuman){
+        console.log("test")
         res.status(400).send("Status 400 : Bad Request")
     }
     else{
